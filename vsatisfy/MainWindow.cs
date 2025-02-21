@@ -11,6 +11,7 @@ using ImGuiNET;
 using Lumina.Excel.Sheets;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Dalamud.Interface.Colors;
 
 namespace Satisfy;
 
@@ -207,19 +208,20 @@ public unsafe class MainWindow : Window, IDisposable
     private void DrawMainTable()
     {
         using (ImRaii.Disabled(!_auto.Running))
-            if (ImGui.Button("Stop current task"))
+            if (ImGui.Button("停止当前任务"))
                 _auto.Stop();
         ImGui.SameLine();
-        ImGui.TextUnformatted($"Status: {_auto.CurrentTask?.Status ?? "idle"}");
+        ImGui.TextUnformatted($"当前状态: {_auto.CurrentTask?.Status ?? "空闲"}");
 
+        ImGui.TextColored(ImGuiColors.DalamudOrange, "注意：此插件依赖 vnavmesh 以及 Artisan 插件，如果你已安装，请忽略本提示。");
         using var table = ImRaii.Table("main_table", 5);
         if (!table)
             return;
         ImGui.TableSetupColumn("NPC", ImGuiTableColumnFlags.WidthFixed, 100);
-        ImGui.TableSetupColumn("Bonuses", ImGuiTableColumnFlags.WidthFixed, 90);
-        ImGui.TableSetupColumn("Deliveries", ImGuiTableColumnFlags.WidthFixed, 120);
-        ImGui.TableSetupColumn("Achievement", ImGuiTableColumnFlags.WidthFixed, 120);
-        ImGui.TableSetupColumn("Actions");
+        ImGui.TableSetupColumn("额外奖励", ImGuiTableColumnFlags.WidthFixed, 90);
+        ImGui.TableSetupColumn("交付进度", ImGuiTableColumnFlags.WidthFixed, 120);
+        ImGui.TableSetupColumn("成就进度", ImGuiTableColumnFlags.WidthFixed, 120);
+        ImGui.TableSetupColumn("操作");
         ImGui.TableHeadersRow();
         foreach (var npc in _npcs)
         {
@@ -257,10 +259,10 @@ public unsafe class MainWindow : Window, IDisposable
         using var table = ImRaii.Table("currencies_table", 4);
         if (!table)
             return;
-        ImGui.TableSetupColumn("Currency", ImGuiTableColumnFlags.WidthFixed, 180);
-        ImGui.TableSetupColumn("Current", ImGuiTableColumnFlags.WidthFixed, 80);
-        ImGui.TableSetupColumn("Max gain", ImGuiTableColumnFlags.WidthFixed, 80);
-        ImGui.TableSetupColumn("Overcap", ImGuiTableColumnFlags.WidthFixed, 80);
+        ImGui.TableSetupColumn("点数", ImGuiTableColumnFlags.WidthFixed, 180);
+        ImGui.TableSetupColumn("当前", ImGuiTableColumnFlags.WidthFixed, 80);
+        ImGui.TableSetupColumn("可获取", ImGuiTableColumnFlags.WidthFixed, 80);
+        ImGui.TableSetupColumn("溢出", ImGuiTableColumnFlags.WidthFixed, 80);
         ImGui.TableHeadersRow();
         var cm = CurrencyManager.Instance();
         foreach (var reward in _rewards)
@@ -287,7 +289,7 @@ public unsafe class MainWindow : Window, IDisposable
 
     private void DrawDebug()
     {
-        if (ImGui.Button("Reset achievement data"))
+        if (ImGui.Button("重置成就数据"))
             foreach (var npc in _npcs)
                 npc.AchievementStart = npc.AchievementMax = 0;
 
@@ -363,10 +365,10 @@ public unsafe class MainWindow : Window, IDisposable
         if (remainingTurnins <= 0)
             return;
 
-        if (ImGui.Button("Auto craft turnin"))
+        if (ImGui.Button("自动制作交付"))
             _auto.Start(new AutoCraft(npc, _dalamud));
         ImGui.SameLine();
-        if (ImGui.Button("Auto fish turnin"))
+        if (ImGui.Button("自动钓鱼交付"))
             _auto.Start(new AutoFish(npc, _dalamud));
     }
 
