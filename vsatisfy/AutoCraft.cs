@@ -20,7 +20,7 @@ public sealed class AutoCraft(NPCInfo npc, IDalamudPluginInterface dalamud) : Au
         if (npc.CraftData == null)
             throw new Exception("Craft data is not initialized");
 
-        Status = "Teleporting to zone";
+        Status = "传送中";
         await TeleportTo(npc.TerritoryId, npc.CraftData.VendorLocation);
 
         var turnInItemId = npc.TurnInItems[0];
@@ -32,15 +32,15 @@ public sealed class AutoCraft(NPCInfo npc, IDalamudPluginInterface dalamud) : Au
             var missingIngredients = requiredIngredients - Game.NumItemsInInventory(ingredient.id, 0);
             if (missingIngredients > 0)
             {
-                Status = $"Buying {missingIngredients}x {ItemName(ingredient.id)}";
+                Status = $"购买素材 {missingIngredients}x {ItemName(ingredient.id)}";
                 await MoveTo(npc.CraftData.VendorLocation, 3);
                 await BuyFromShop(npc.CraftData.VendorInstanceId, npc.CraftData.VendorShopId, ingredient.id, missingIngredients);
             }
-            Status = $"Crafting {remainingCrafts}x {ItemName(turnInItemId)}";
+            Status = $"制作 {remainingCrafts}x {ItemName(turnInItemId)}";
             await CraftItem(turnInItemId, remainingCrafts, remainingTurnins);
         }
 
-        Status = $"Turning in {remainingTurnins}x {ItemName(turnInItemId)}";
+        Status = $"正在交付 {remainingTurnins}x {ItemName(turnInItemId)}";
         await MoveTo(npc.CraftData.TurnInLocation, 3);
         await TurnIn(npc.Index, npc.CraftData.TurnInInstanceId, npc.TurnInItems[0], 0, remainingTurnins);
     }

@@ -20,11 +20,11 @@ public sealed class Config
 
     public void Draw()
     {
-        if (ImGui.Checkbox("Automatically fetch achievements state when showing the window", ref AutoFetchAchievements))
+        if (ImGui.Checkbox("打开窗口时自动获取成就数据", ref AutoFetchAchievements))
             NotifyModified();
-        if (ImGui.Checkbox("Automatically open window on login if deliveries aren't complete", ref AutoShowIfIncomplete))
+        if (ImGui.Checkbox("如果限额未用完则在登录时自动打开窗口", ref AutoShowIfIncomplete))
             NotifyModified();
-        if (ImGui.Checkbox("Show debug UI", ref ShowDebugUI))
+        if (ImGui.Checkbox("开启 Debug", ref ShowDebugUI))
             NotifyModified();
     }
 
