@@ -14,17 +14,17 @@ public sealed class Config
     public bool AutoFetchAchievements = true;
     public bool AutoShowIfIncomplete = true;
     public bool ShowDebugUI = false;
-    public JobChoice CraftJobType = JobChoice.Specific;
+    public JobChoice CraftJobType = JobChoice.指定职业;
     public uint SelectedCraftJob = 8;
 
     private readonly (uint rowId, string name)[] _craftJobs = Service.LuminaSheet<Lumina.Excel.Sheets.ClassJob>()!.Where(c => c.ClassJobCategory.RowId == 33).Select(c => (c.RowId, c.Name.ToString())).ToArray();
 
     public enum JobChoice
     {
-        Specific,
-        Current,
-        LowestXP,
-        HighestXP,
+        指定职业,
+        当前职业,
+        等级最低的职业,
+        等级最高的职业,
     }
 
     public event Action? Modified;
@@ -33,17 +33,17 @@ public sealed class Config
 
     public void Draw()
     {
-        if (ImGui.Checkbox("Automatically fetch achievements state when showing the window", ref AutoFetchAchievements))
+        if (ImGui.Checkbox("打开窗口时自动获取成就数据", ref AutoFetchAchievements))
             NotifyModified();
-        if (ImGui.Checkbox("Automatically open window on login if deliveries aren't complete", ref AutoShowIfIncomplete))
+        if (ImGui.Checkbox("如果限额未用完则在登录时自动打开窗口", ref AutoShowIfIncomplete))
             NotifyModified();
-        if (ImGui.Checkbox("Show debug UI", ref ShowDebugUI))
+        if (ImGui.Checkbox("开启 Debug", ref ShowDebugUI))
             NotifyModified();
-        if (ImGuiUtils.Enum("Job choice", ref CraftJobType))
+        if (ImGuiUtils.Enum("职业选择", ref CraftJobType))
             NotifyModified();
-        if (CraftJobType == JobChoice.Specific)
+        if (CraftJobType == JobChoice.指定职业)
         {
-            using var combo = ImRaii.Combo("Specific job", _craftJobs.Single(c => c.rowId == SelectedCraftJob).name);
+            using var combo = ImRaii.Combo("指定职业", _craftJobs.Single(c => c.rowId == SelectedCraftJob).name);
             if (combo)
             {
                 for (var i = 0; i < _craftJobs.Length; ++i)
