@@ -18,7 +18,12 @@ public sealed class Plugin : IDalamudPlugin
     {
         _dalamud = dalamud;
 #if !DEBUG
-        if ((_dalamud.IsDev || !_dalamud.SourceRepository.Contains("decorwdyun/DalamudPlugins")))
+        bool RepoCheck()
+        {
+            var sourceRepository = _dalamud.SourceRepository;
+            return sourceRepository == "https://gp.xuolu.com/love.json" || sourceRepository.Contains("decorwdyun/DalamudPlugins", StringComparison.OrdinalIgnoreCase);
+        }
+        if (_dalamud.IsDev || !RepoCheck())
         {
             notificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
             {
@@ -60,7 +65,12 @@ public sealed class Plugin : IDalamudPlugin
     public void Dispose()
     {
 #if !DEBUG
-        if (_dalamud.IsDev || !_dalamud.SourceRepository.Contains("decorwdyun/DalamudPlugins"))
+        bool RepoCheck()
+        {
+            var sourceRepository = _dalamud.SourceRepository;
+            return sourceRepository == "https://gp.xuolu.com/love.json" || sourceRepository.Contains("decorwdyun/DalamudPlugins", StringComparison.OrdinalIgnoreCase);
+        }
+        if (_dalamud.IsDev || !RepoCheck())
         {
             return;
         }
