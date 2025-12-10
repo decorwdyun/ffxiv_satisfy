@@ -11,9 +11,28 @@ public sealed class Plugin : IDalamudPlugin
     private WindowSystem WindowSystem = new("vsatisfy");
     private MainWindow _wndMain;
     private ICommandManager _cmd;
+    private IDalamudPluginInterface _dalamud;
 
-    public Plugin(IDalamudPluginInterface dalamud, ISigScanner sigScanner, ICommandManager commandManager)
+    public Plugin(IDalamudPluginInterface dalamud, ISigScanner sigScanner, ICommandManager commandManager, INotificationManager notificationManager)
     {
+        _dalamud = dalamud;
+#if !DEBUG
+        bool RepoCheck()
+        {
+            var sourceRepository = _dalamud.SourceRepository;
+            return sourceRepository == "https://gp.xuolu.com/love.json" || sourceRepository.Contains("decorwdyun/DalamudPlugins", StringComparison.OrdinalIgnoreCase);
+        }
+        if (_dalamud.IsDev || !RepoCheck())
+        {
+            notificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
+            {
+                Type = Dalamud.Interface.ImGuiNotification.NotificationType.Error,
+                Title = "加载验证",
+                Content = "由于本地加载或安装来源仓库非 decorwdyun 个人仓库，插件禁止加载。",
+            });
+            return;
+        }
+#endif
         if (!dalamud.ConfigDirectory.Exists)
             dalamud.ConfigDirectory.Create();
 
@@ -45,6 +64,17 @@ public sealed class Plugin : IDalamudPlugin
 
     public void Dispose()
     {
+#if !DEBUG
+        bool RepoCheck()
+        {
+            var sourceRepository = _dalamud.SourceRepository;
+            return sourceRepository == "https://gp.xuolu.com/love.json" || sourceRepository.Contains("decorwdyun/DalamudPlugins", StringComparison.OrdinalIgnoreCase);
+        }
+        if (_dalamud.IsDev || !RepoCheck())
+        {
+            return;
+        }
+#endif
         _cmd.RemoveHandler("/vsatisfy");
         WindowSystem.RemoveAllWindows();
         _wndMain.Dispose();

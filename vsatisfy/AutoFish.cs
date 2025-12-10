@@ -21,7 +21,7 @@ public sealed class AutoFish(NPCInfo npc, IDalamudPluginInterface dalamud) : Aut
         var remainingFish = remainingTurnins - Game.NumItemsInInventory(turnInItemId, 1);
         if (remainingFish > 0)
         {
-            Status = "Teleporting to fish zone";
+            Status = "前往渔点";
             await TeleportTo(npc.FishData.TerritoryTypeId, npc.FishData.Center);
 
             // TODO: improve move-to destination (ideally closest point where you can actually fish...)
@@ -33,10 +33,10 @@ public sealed class AutoFish(NPCInfo npc, IDalamudPluginInterface dalamud) : Aut
         }
         else // TODO: full auto...
         {
-            Status = "Teleporting to turn-in zone";
+            Status = "前往交付地";
             await TeleportTo(npc.TerritoryId, npc.CraftData.TurnInLocation);
 
-            Status = $"Turning in {remainingTurnins}x {ItemName(turnInItemId)}";
+            Status = $"正在交付 {remainingTurnins}x {ItemName(turnInItemId)}";
             await MoveTo(npc.CraftData.TurnInLocation, 3);
             await TurnIn(npc.Index, npc.CraftData.TurnInInstanceId, npc.TurnInItems[2], 2, remainingTurnins);
         }
