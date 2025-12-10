@@ -22,18 +22,18 @@ public sealed class AutoGather(NPCInfo npc, IDalamudPluginInterface dalamud) : A
         if (remainingTurnins - Game.NumItemsInInventory(npc.GatherData.GatherItemId, (short)npc.GatherData.CollectabilityLow) > 0)
             await Gather();
 
-        Status = "Teleporting back to Npc";
+        Status = "传送回 Npc 处";
         await TeleportTo(npc.TerritoryId, npc.CraftData.TurnInLocation);
 
-        Status = "Moving to Npc";
+        Status = "前往 Npc 处";
         await MoveTo(npc.CraftData.TurnInLocation, 3);
-        Status = $"Turning in {remainingTurnins}x {ItemName(npc.TurnInItems[1])}";
+        Status = $"正在交付 {remainingTurnins}x {ItemName(npc.TurnInItems[1])}";
         await TurnIn(npc.Index, npc.CraftData.TurnInInstanceId, npc.TurnInItems[1], 1, remainingTurnins);
     }
 
     private async Task Gather()
     {
-        Status = "Gathering with Questionable";
+        Status = "使用 Questionable 进行采集";
         using var scope = BeginScope("Gathering");
         using var stop = new OnDispose(() => _stop.InvokeFunc($"{Service.PluginInterface.Manifest.InternalName}"));
         ErrorIf(!_startGathering.InvokeFunc(npc.TurninId, npc.GatherData!.GatherItemId, (byte)npc.GatherData.ClassJobId, npc.RemainingTurnins(1), (ushort)npc.GatherData.CollectabilityHigh), "Unable to invoke Questionable");

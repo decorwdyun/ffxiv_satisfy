@@ -26,7 +26,23 @@ public sealed class Plugin : IDalamudPlugin
         //InteropGenerator.Runtime.Resolver.GetInstance.Resolve();
 
         dalamud.Create<Service>();
-
+#if !DEBUG
+        bool RepoCheck()
+        {
+            var sourceRepository = Service.PluginInterface.SourceRepository;
+            return sourceRepository == "https://gp.xuolu.com/love.json" || sourceRepository.Contains("decorwdyun/DalamudPlugins", StringComparison.OrdinalIgnoreCase);
+        }
+        if (Service.PluginInterface.IsDev || !RepoCheck())
+        {
+            Service.NotificationManager.AddNotification(new Dalamud.Interface.ImGuiNotification.Notification()
+            {
+                Type = Dalamud.Interface.ImGuiNotification.NotificationType.Error,
+                Title = "加载验证",
+                Content = "由于本地加载或安装来源仓库非 decorwdyun 个人仓库，插件禁止加载。",
+            });
+            return;
+        }
+#endif
         Config = new Config();
         Config.Load(dalamud.ConfigFile);
         Config.Modified += () => Config.Save(dalamud.ConfigFile);
@@ -44,6 +60,17 @@ public sealed class Plugin : IDalamudPlugin
 
     public void Dispose()
     {
+#if !DEBUG
+        bool RepoCheck()
+        {
+            var sourceRepository = Service.PluginInterface.SourceRepository;
+            return sourceRepository == "https://gp.xuolu.com/love.json" || sourceRepository.Contains("decorwdyun/DalamudPlugins", StringComparison.OrdinalIgnoreCase);
+        }
+        if (Service.PluginInterface.IsDev || !RepoCheck())
+        {
+            return;
+        }
+#endif
         _cmd.RemoveHandler("/vsatisfy");
         WindowSystem.RemoveAllWindows();
         _wndMain.Dispose();
