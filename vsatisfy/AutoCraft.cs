@@ -34,6 +34,7 @@ public sealed class AutoCraft(NPCInfo npc, IDalamudPluginInterface dalamud) : Au
             {
                 Status = $"购买素材 {missingIngredients}x {ItemName(ingredient.id)}";
                 await MoveTo(npc.CraftData.VendorLocation, 3);
+                await Dismount();
                 await BuyFromShop(npc.CraftData.VendorInstanceId, npc.CraftData.VendorShopId, ingredient.id, missingIngredients);
             }
             Status = $"制作 {remainingCrafts}x {ItemName(turnInItemId)}";
@@ -42,7 +43,7 @@ public sealed class AutoCraft(NPCInfo npc, IDalamudPluginInterface dalamud) : Au
 
         Status = $"正在交付 {remainingTurnins}x {ItemName(turnInItemId)}";
         await MoveTo(npc.CraftData.TurnInLocation, 3);
-        await TurnIn(npc.Index, npc.CraftData.TurnInInstanceId, npc.TurnInItems[0], 0, remainingTurnins);
+        await TurnIn(npc, 0);
     }
 
     private async Task BuyFromShop(ulong vendorInstanceId, uint shopId, uint itemId, int count)
