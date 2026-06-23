@@ -18,9 +18,6 @@ public class Service
     [PluginService] public static INotificationManager NotificationManager { get; private set; } = null!;
     [PluginService] public static IChatGui Chat { get; private set; } = null!;
 
-    public static Plugin Plugin { get; set; } = null!;
-    public static clib.Services.Automation Automation { get; private set; } = null!;
-
     public static Lumina.GameData LuminaGameData => DataManager.GameData;
     public static Lumina.Excel.ExcelSheet<T>? LuminaSheet<T>() where T : struct, Lumina.Excel.IExcelRow<T> => LuminaGameData?.GetExcelSheet<T>(Lumina.Data.Language.ChineseSimplified);
     public static Lumina.Excel.SubrowExcelSheet<T>? LuminaSheetSubrow<T>() where T : struct, Lumina.Excel.IExcelSubrow<T> => LuminaGameData?.GetSubrowExcelSheet<T>(Lumina.Data.Language.ChineseSimplified);
@@ -30,8 +27,6 @@ public class Service
 
     internal static void Initialize(Plugin plugin, IDalamudPluginInterface dalamud)
     {
-        Plugin = plugin;
-        Automation = new();
         dalamud.Create<Service>();
     }
 }

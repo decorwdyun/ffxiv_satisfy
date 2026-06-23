@@ -1,4 +1,5 @@
-﻿using clib.TaskSystem;
+using clib.Extensions;
+using clib.TaskSystem;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Plugin.Ipc;
 using System.Threading.Tasks;
@@ -33,7 +34,11 @@ public sealed class AutoCraft(NPCInfo npc) : AutoCommon
             if (missingIngredients > 0)
             {
                 Status = $"购买素材 {missingIngredients}x {ItemName(ingredient.id)}";
-                await MoveTo(npc.CraftData.VendorLocation, MovementConfig.InteractRange);
+                if (Service.ClientState.TerritoryType == npc.TerritoryId)
+                    await MoveTo(npc.CraftData.VendorLocation, MovementConfig.InteractRange, allowTeleportIfFaster: false, allowAethernet: false);
+                else
+                    await MoveTo(npc.TerritoryId, npc.CraftData.VendorLocation, MovementConfig.InteractRange, allowTeleportIfFaster: false, allowAethernetWithinTerritory: false);
+
                 await Dismount();
                 await BuyFromShop(npc.CraftData.VendorInstanceId, npc.CraftData.VendorShopId, ingredient.id, missingIngredients);
             }
@@ -42,7 +47,10 @@ public sealed class AutoCraft(NPCInfo npc) : AutoCommon
         }
 
         Status = $"正在交付 {remainingTurnins}x {ItemName(turnInItemId)}";
-        await MoveTo(npc.CraftData.TurnInLocation, MovementConfig.InteractRange);
+        if (Service.ClientState.TerritoryType == npc.TerritoryId)
+            await MoveTo(npc.CraftData.TurnInLocation, MovementConfig.InteractRange, allowTeleportIfFaster: false, allowAethernet: false);
+        else
+            await MoveTo(npc.TerritoryId, npc.CraftData.TurnInLocation, MovementConfig.InteractRange, allowTeleportIfFaster: false, allowAethernetWithinTerritory: false);
         await TurnIn(npc, 0);
     }
 
@@ -89,4 +97,5 @@ public sealed class AutoCraft(NPCInfo npc) : AutoCommon
 
     private void ArtisanCraft(ushort recipe, int count) => _artisanCraft.InvokeAction(recipe, count);
     private bool ArtisanInProgress() => _artisanInProgress.InvokeFunc();
+
 }
